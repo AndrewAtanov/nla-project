@@ -68,6 +68,30 @@ class VGGWrapper(BaseWrapper):
         return f
 
 
+class ResNetWrapper(BaseWrapper):
+    def list_childrens(self, module):
+        res = []
+        if isinstance(module, torch.nn.modules.container.Sequential):
+            for c in module.children():
+                res = res + self.list_childrens(c)
+        elif isinstance(module, self.net.__class__):
+            for c in module.children():
+                res = res + self.list_childrens(c)
+        else:
+            res.append(module)
+        return res
+
+    def feature(self, x, i):
+        layers = self.list_childrens(self.net)[:-1]
+        assert i < len(layers)
+        f = x
+        for layer in layers[:i + 1]:
+            f = layer(f)
+        f = f.flatten()
+
+        return f
+
+
 def psi(x, r):
     return np.sign(x) * np.power(np.abs(x), r-1)
 
