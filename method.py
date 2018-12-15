@@ -1,26 +1,20 @@
 import numpy as np
 import torch
+import torchvision
 
 
 def tonp(x):
     return x.cpu().detach().numpy()
 
 
-class Model(object):
+class BaseWrapper(object):
     """ Wrapper for NN"""
-    def __init__(self, net, device, nettype='vgg'):
-        if nettype == 'vgg':
-            self.layers = net.features
+    def __init__(self, net, device):
+        self.net = net
         self.device = device
 
     def feature(self, x, i):
-        assert i < len(self.layers)
-        f = x
-        for layer in self.layers[:i + 1]:
-            f = layer(f)
-        f = f.flatten()
-
-        return f
+        raise NotImplementedError
 
     def jacobi_matvec(self, x, i):
         """ return matvec for J_i(x) and transposed one """
@@ -60,6 +54,18 @@ class Model(object):
             return tonp(J_v1)
 
         return mv
+
+
+class VGGWrapper(BaseWrapper):
+    def feature(self, x, i):
+        layers = self.net.features
+        assert i < len(layers)
+        f = x
+        for layer in layers[:i + 1]:
+            f = layer(f)
+        f = f.flatten()
+
+        return f
 
 
 def psi(x, r):
