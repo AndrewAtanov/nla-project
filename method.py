@@ -65,6 +65,12 @@ class BaseWrapper(object):
 class VGGWrapper(BaseWrapper):
     def __init__(self, net, device):
         super(VGGWrapper, self).__init__(net, device)
+        self.layers = self.net.features
+
+
+class ResNetWrapper(BaseWrapper):
+    def __init__(self, net, device):
+        super(VGGWrapper, self).__init__(net, device)
         self.layers = self.list_childrens(self.net)[:-1]
 
     def list_childrens(self, module):
