@@ -14,7 +14,13 @@ class BaseWrapper(object):
         self.device = device
 
     def feature(self, x, i):
-        raise NotImplementedError
+        assert i <= len(self.layers)
+        f = x
+        for self.layer in self.layers[:i]:
+            f = self.layer(f)
+        f = f.flatten()
+
+        return f
 
     def jacobi_matvec(self, x, i):
         """ return matvec for J_i(x) and transposed one """
@@ -57,18 +63,10 @@ class BaseWrapper(object):
 
 
 class VGGWrapper(BaseWrapper):
-    def feature(self, x, i):
-        layers = self.net.features
-        assert i < len(layers)
-        f = x
-        for layer in layers[:i + 1]:
-            f = layer(f)
-        f = f.flatten()
+    def __init__(self, net, device):
+        super(VGGWrapper, self).__init__(net, device)
+        self.layers = self.list_childrens(self.net)[:-1]
 
-        return f
-
-
-class ResNetWrapper(BaseWrapper):
     def list_childrens(self, module):
         res = []
         if isinstance(module, torch.nn.modules.container.Sequential):
@@ -80,16 +78,6 @@ class ResNetWrapper(BaseWrapper):
         else:
             res.append(module)
         return res
-
-    def feature(self, x, i):
-        layers = self.list_childrens(self.net)[:-1]
-        assert i < len(layers)
-        f = x
-        for layer in layers[:i + 1]:
-            f = layer(f)
-        f = f.flatten()
-
-        return f
 
 
 def psi(x, r):
