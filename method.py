@@ -70,7 +70,7 @@ class VGGWrapper(BaseWrapper):
 
 class ResNetWrapper(BaseWrapper):
     def __init__(self, net, device):
-        super(VGGWrapper, self).__init__(net, device)
+        super(ResNetWrapper, self).__init__(net, device)
         self.layers = self.list_childrens(self.net)[:-1]
 
     def list_childrens(self, module):
@@ -98,16 +98,17 @@ def power_method(x0, matvec_A, matvec_AT, p, q, max_iter=1000):
         x = x0 / np.linalg.norm(x0, ord=p)
         p_hat = 1.0 / (1.0 - 1.0 / p)
 
+    Ax = matvec_A(x)
     for _ in range(max_iter):
-        Ax = matvec_A(x)
         if p == np.inf:
             x = np.sign(matvec_AT(psi(Ax, q)))
         else:
             Sx = psi(matvec_AT(psi(Ax, q)), p_hat)
             x = Sx / np.linalg.norm(Sx, ord=p)
 
-        s = np.linalg.norm(Ax, ord=q)
+        Ax = matvec_A(x)
 
+    s = np.linalg.norm(Ax.astype(np.float64), ord=q)
     return x, s
 
 
