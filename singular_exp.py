@@ -20,6 +20,8 @@ args = parser.parse_args()
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
 d = torch.device('cuda')
 
+np.random.seed(42)
+
 layervssingular = []
 
 if args.model == 'vgg16':
