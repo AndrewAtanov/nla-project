@@ -36,6 +36,10 @@ elif args.model == 'resnet34':
     net = torchvision.models.resnet34(pretrained=True)
     net.to(d)
     model = method.ResNetWrapper(net, d)
+elif args.model == 'resnet50':
+    net = torchvision.models.resnet50(pretrained=True)
+    net.to(d)
+    model = method.ResNetWrapper(net, d)
 
 img_batch = np.load(args.img_batch_path)
 tmp_img = torch.randn(1, 3, 224, 224).to(d)

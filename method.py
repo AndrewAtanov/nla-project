@@ -87,7 +87,7 @@ class ResNetWrapper(BaseWrapper):
 
 
 def psi(x, r):
-    return np.sign(x) * np.power(np.abs(x), r-1)
+    return np.sign(x) * np.power(np.abs(x).astype(np.float64), r-1)
 
 
 def power_method(x0, matvec_A, matvec_AT, p, q, max_iter=1000):
